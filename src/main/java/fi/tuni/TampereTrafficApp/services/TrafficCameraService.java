@@ -5,10 +5,8 @@ import fi.tuni.TampereTrafficApp.models.TrafficCamera.Meta;
 import fi.tuni.TampereTrafficApp.models.TrafficCamera.TrafficCamera;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,12 +24,14 @@ public class TrafficCameraService {
     }
 
     private void fetchAndStoreTrafficCameras() {
-        Mono<TrafficCameraResponse> responseMono = webClient.get()
+        webClient.get()
                 .uri(CAMERAS_ENDPOINT)
                 .retrieve()
-                .bodyToMono(TrafficCameraResponse.class);
-        storedTrafficCameras = Objects.requireNonNull(responseMono.block()).getResults();
-        storedMeta = Objects.requireNonNull(responseMono.block()).getMeta();
+                .bodyToMono(TrafficCameraResponse.class)
+                .subscribe(response -> {
+                    storedTrafficCameras = response.getResults();
+                    storedMeta = response.getMeta();
+                }, error -> System.err.println("Error fetching traffic cameras: " + error.getMessage()));
     }
 
     public List<TrafficCamera> getTrafficCameras() {
