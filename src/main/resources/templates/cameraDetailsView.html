@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Camera Details</title>
+    <style>
+        .camera-details {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .camera-details img {
+            width: 100%;
+            height: auto;
+        }
+
+        .camera-details h2 {
+            text-align: center;
+        }
+
+        .camera-details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="camera-details">
+    <h2 th:text="${camera.cameraName}">Camera Name</h2>
+    <img th:src="${camera.cameraPresets[0].imageUrl}" alt="Camera Image">
+    <p><strong>Camera ID:</strong> <span th:text="${camera.cameraId}">Camera ID</span></p>
+    <p><strong>Latitude:</strong> <span th:text="${camera.location.geometry.coordinates.lat}">Latitude</span></p>
+    <p><strong>Longitude:</strong> <span th:text="${camera.location.geometry.coordinates.lon}">Longitude</span></p>
+    <p><strong>Preset ID:</strong> <span th:text="${camera.cameraPresets[0].presetId}">Preset ID</span></p>
+    <p><strong>Presentation Name:</strong> <span
+            th:text="${camera.cameraPresets[0].presentationName}">Presentation Name</span></p>
+    <p><strong>Direction Description:</strong> <span th:text="${camera.cameraPresets[0].directionDescription}">Direction Description</span>
+    </p>
+    <p><strong>Latest Picture Timestamp:</strong> <span th:text="${camera.cameraPresets[0].latestPictureTimestamp}">Timestamp</span>
+    </p>
+</div>
+</body>
+</html>

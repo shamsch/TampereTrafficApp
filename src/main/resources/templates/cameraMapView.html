@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Traffic Cameras</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<h1>Tampere Traffic App</h1>
+<h3>Camera Map Only View</h3>
+<div id="map"></div>
+<div>
+    <h3>Meta Information</h3>
+    <p>Request Filters: <span th:text="${meta.requestFilters}"></span></p>
+    <p>Response Timestamp: <span th:text="${meta.responseTs}"></span></p>
+</div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var trafficCameras = /*[[${trafficCameras}]]*/ [];
+
+    var map = L.map('map').setView([61.4462, 23.854382], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(map);
+
+    var markers = [];
+    trafficCameras.forEach(function (camera) {
+        var marker = L.marker([camera.location.geometry.coordinates.lat, camera.location.geometry.coordinates.lon])
+            .bindPopup('<b>' + camera.cameraName + '</b><br><img src="' + camera.cameraPresets[0].imageUrl + '" alt="' + camera.cameraName + '" style="width:200px;height:auto;"><br>' + camera.location.geometry.coordinates.lat + ', ' + camera.location.geometry.coordinates.lon + '<br><a href="/camera/details/' + camera.cameraId + '">View Details</a>');
+        markers.push(marker);
+        marker.addTo(map);
+    });
+
+    var group = new L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), { padding: [50, 50] });
+    /*]]>*/
+</script>
+</body>
+</html>
