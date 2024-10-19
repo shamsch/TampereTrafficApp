@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Incident Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .incident-info {
+            margin-bottom: 20px;
+        }
+
+        .incident-info p {
+            margin: 10px 0;
+        }
+
+        .severity {
+            font-weight: bold;
+            color: #d9534f;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .location-info {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Traffic Incident Details</h1>
+    <div class="incident-info" th:if="${situationRecord != null}">
+        <p><strong>Type:</strong> <span th:text="${situationRecord.type.value}">Incident Type</span></p>
+        <p><strong>Detailed Type:</strong> <span
+                th:text="${situationRecord.detailedType != null ? situationRecord.detailedType.value : 'N/A'}">Detailed Type</span>
+        </p>
+        <p><strong>Severity:</strong> <span class="severity" th:text="${situationRecord.severity}">Severity</span></p>
+        <p><strong>Start Time:</strong> <span th:text="${situationRecord.startTime}">Start Time</span></p>
+        <p><strong>End Time:</strong> <span
+                th:text="${situationRecord.endTime != null ? situationRecord.endTime : 'Not specified'}">End Time</span>
+        </p>
+        <p><strong>Description:</strong> <span
+                th:text="${situationRecord.generalPublicComment != null ? situationRecord.generalPublicComment : 'No description available'}">Description</span>
+        </p>
+        <p><strong>Source:</strong> <span th:text="${situationRecord.sourceName}">Source</span></p>
+        <div th:if="${situationRecord.temporaryLimitText != null and !situationRecord.temporaryLimitText.isEmpty()}">
+            <strong>Temporary Limits:</strong>
+            <ul>
+                <li th:each="limit : ${situationRecord.temporaryLimitText}" th:text="${limit}"></li>
+            </ul>
+        </div>
+
+        <div class="location-info">
+            <strong>Location:</strong>
+            <p th:if="${situationRecord.location.coordinatesForDisplay != null}"
+               th:text="'Coordinates: ' + ${situationRecord.location.coordinatesForDisplay.latitude} + ', ' + ${situationRecord.location.coordinatesForDisplay.longitude}">
+                Coordinates
+            </p>
+            <p th:if="${situationRecord.location.locationDescriptor != null}"
+               th:text="'Description: ' + ${situationRecord.location.locationDescriptor}">
+                Location Description
+            </p>
+        </div>
+    </div>
+
+    <a href="/incident/map" class="back-link">Back to Traffic Incidents List</a>
+</div>
+</body>
+</html>
