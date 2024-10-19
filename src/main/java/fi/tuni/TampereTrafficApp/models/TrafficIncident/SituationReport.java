@@ -1,29 +1,18 @@
 package fi.tuni.TampereTrafficApp.models.TrafficIncident;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  *
  * @author Joel
  */
-
+@Getter
+@Setter
+@ToString
 public class SituationReport {
     private String modelBaseVersion;
     private SituationPublicationLight situationPublicationLight;
-
-    // Getters and setters...
-    public String getModelBaseVersion() {
-        return modelBaseVersion;
-    }
-
-    public void setModelBaseVersion(String modelBaseVersion) {
-        this.modelBaseVersion = modelBaseVersion;
-    }
-
-    public SituationPublicationLight getSituationPublicationLight() {
-        return situationPublicationLight;
-    }
-
-    public void setSituationPublicationLight(SituationPublicationLight situationPublicationLight) {
-        this.situationPublicationLight = situationPublicationLight;
-    }
 }
 

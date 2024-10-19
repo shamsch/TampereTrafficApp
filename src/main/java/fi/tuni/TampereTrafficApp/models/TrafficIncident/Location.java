@@ -1,27 +1,21 @@
 package fi.tuni.TampereTrafficApp.models.TrafficIncident;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+
+
 /**
  *
  * @author Joel
  */
+@Getter
+@Setter
+@ToString
 public class Location {
     private String locationDescriptor;
     private CoordinatesForDisplay coordinatesForDisplay;
-
-    // Getters and setters...
-    public String getLocationDescriptor() {
-        return locationDescriptor;
-    }
-
-    public void setLocationDescriptor(String locationDescriptor) {
-        this.locationDescriptor = locationDescriptor;
-    }
-
-    public CoordinatesForDisplay getCoordinatesForDisplay() {
-        return coordinatesForDisplay;
-    }
-
-    public void setCoordinatesForDisplay(CoordinatesForDisplay coordinatesForDisplay) {
-        this.coordinatesForDisplay = coordinatesForDisplay;
-    }
+    private Line line;
+    private Area area;
 }
