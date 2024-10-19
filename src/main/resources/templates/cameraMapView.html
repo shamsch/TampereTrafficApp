@@ -9,11 +9,39 @@
             height: 600px;
             width: 100%;
         }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
 </head>
 <body>
 <h1>Tampere Traffic App</h1>
-<h3>Camera Map Only View</h3>
+<div class="navbar">
+    <a href="/camera/map" class="active">Traffic Cameras</a>
+    <a href="/incident/map">Traffic Incidents</a>
+</div>
 <div id="map"></div>
 <div>
     <h3>Meta Information</h3>
@@ -27,8 +55,10 @@
 
     var map = L.map('map').setView([61.4462, 23.854382], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
         maxZoom: 19,
+        attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        ext: 'png'
     }).addTo(map);
 
     var markers = [];
