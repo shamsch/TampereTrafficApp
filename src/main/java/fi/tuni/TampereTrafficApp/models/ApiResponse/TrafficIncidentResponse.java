@@ -1,5 +1,6 @@
 package fi.tuni.TampereTrafficApp.models.ApiResponse;
 
+import fi.tuni.TampereTrafficApp.models.TrafficIncident.SituationPublicationLight;
 import fi.tuni.TampereTrafficApp.models.TrafficIncident.SituationRecord;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +17,6 @@ import java.util.List;
 @Setter
 @ToString
 public class TrafficIncidentResponse {
-    private List<SituationRecord> results;
+    private String modelBaseVersion;
+    private SituationPublicationLight situationPublicationLight;
 }

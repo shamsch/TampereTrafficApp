@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 public class TrafficIncidentService {
     private static final String BASE_URL = "https://traffic-incidents.tampere.fi";
-    private static final String INCIDENTS_ENDPOINT = "/api/v1";
+    private static final String INCIDENTS_ENDPOINT = "/api/v1?lang=en";
     
     private final WebClient webClient;
     private List<SituationRecord> storedSituationRecords;
@@ -32,7 +32,7 @@ public class TrafficIncidentService {
                 .retrieve()
                 .bodyToMono(TrafficIncidentResponse.class)
                 .subscribe(response -> {
-                    storedSituationRecords = response.getResults();
+                    storedSituationRecords = response.getSituationPublicationLight().getSituationRecord();
                 }, e -> System.err.println("Error fetching traffic incidents: " + e.getMessage()));
     }
     
