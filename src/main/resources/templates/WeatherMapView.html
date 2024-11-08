@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Cameras</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        .navbar a {
+            float: left;
+            display: block;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Tampere Weather Cameras</h1>
+<div class="navbar">
+    <a href="/weathercam/map" class="active">Weather Cameras</a>
+    <!-- Add other links as needed -->
+</div>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var weatherCameras = /*[[${weatherCameras}]]*/ [];
+
+    var map = L.map('map').setView([61.4462, 23.854382], 13);
+
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.{ext}', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        ext: 'png'
+    }).addTo(map);
+
+    var markers = [];
+    weatherCameras.forEach(function (camera) {
+        var marker = L.marker([camera.geometry.coordinates[1], camera.geometry.coordinates[0]])
+         .bindPopup('<b>' + camera.properties.name + '</b><br>' +
+                     camera.properties.presets.map(preset => '<img src="' + preset.imageUrl + '" alt="' + camera.properties.name + '" style="width:200px;height:auto;"><br>' + preset.presentationName).join('<br>') +
+                     '<br><a href="/weathercam/details/' + camera.properties.id + '">View Details</a>');
+        markers.push(marker);
+        marker.addTo(map);
+    });
+
+    var group = new L.featureGroup(markers);
+    map.fitBounds(group.getBounds(), { padding: [50, 50] });
+    /*]]>*/
+</script>
+</body>
+</html>

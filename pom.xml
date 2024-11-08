@@ -42,6 +42,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
+            
+                <dependency>
+                    <groupId>org.apache.httpcomponents.client5</groupId>
+                    <artifactId>httpclient5</artifactId>
+                    <version>5.2</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.httpcomponents.core5</groupId>
+                    <artifactId>httpcore5</artifactId>
+                    <version>5.2</version>
+                </dependency>
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>

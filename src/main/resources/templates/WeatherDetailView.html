@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Camera Details</title>
+    <style>
+        .camera-details {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .camera-details img {
+            width: 100%;
+            height: auto;
+        }
+
+        .camera-details h2 {
+            text-align: center;
+        }
+
+        .camera-details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="camera-details">
+    <h2 th:text="${camera.properties.name}">Camera Name</h2>
+    <div th:each="preset : ${camera.properties.presets}">
+        <img th:src="${preset.imageUrl}" alt="Camera Image">
+        <p><strong>Presentation Name:</strong> <span th:text="${preset.presentationName}">Presentation Name</span></p>
+    </div>
+    <p><strong>Camera ID:</strong> <span th:text="${camera.properties.id}">Camera ID</span></p>
+    <p><strong>Latitude:</strong> <span th:text="${camera.geometry.coordinates[1]}">Latitude</span></p>
+    <p><strong>Longitude:</strong> <span th:text="${camera.geometry.coordinates[0]}">Longitude</span></p>
+</div>
+</body>
+</html>
