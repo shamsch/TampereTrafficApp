@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -69,4 +70,26 @@ public class WeatherCameraController {
         model.addAttribute("camera", feature);
         return "WeatherDetailView";
     }
+    
+    public String getWeatherCameraTienpinta(Model model) {
+        String[] cameraIds = appConfig.getCameraIds();
+        String baseUrl = appConfig.getDigitrafficApiUrl();
+        
+        // Construct URLs for each camera
+        String[] urls = Stream.of(cameraIds)
+                .map(id -> baseUrl + "/api/weathercam/v1/stations/" + id)
+                .toArray(String[]::new);
+        
+        // Fetch camera data where PresentationName = Tienpinta
+        List<WeatherCameraFeature> features = weatherCameraService.getWeatherCamerasByUrls(urls);
+        // Filter features where PresentationName = Tienpinta
+        features = features.stream()
+               .filter(feature -> feature.getProperties().getPresets().stream()
+                       .anyMatch(preset -> preset.getPresentationName()!= null &&!preset.getPresentationName().isEmpty()
+                                && preset.getPresentationName().equals("Tienpinta")))
+               .collect(Collectors.toList());
+        
+        model.addAttribute("weatherCameras", features);
+        return "WeatherMapView";
+    } 
 }
