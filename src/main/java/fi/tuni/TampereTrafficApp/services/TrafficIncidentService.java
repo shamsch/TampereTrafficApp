@@ -2,6 +2,7 @@ package fi.tuni.TampereTrafficApp.services;
 
 import fi.tuni.TampereTrafficApp.models.ApiResponse.TrafficIncidentResponse;
 import fi.tuni.TampereTrafficApp.models.TrafficIncident.SituationRecord;
+import fi.tuni.TampereTrafficApp.models.TrafficIncident.Type;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -45,4 +46,28 @@ public class TrafficIncidentService {
                 .filter(record -> record.getId().equals(recordId))
                 .findFirst();
     }
+    
+    public List<Type> getSituationRecordTypes() {
+        ArrayList<Type> types = new ArrayList<>();
+        for (SituationRecord sr : storedSituationRecords) {
+            if (!types.contains(sr.getDetailedType())) {
+                types.add(sr.getDetailedType());
+                types.add(sr.getDetailedType())
+            }
+        }
+
+        return types;
+    }
+
+    public List<SituationRecord> getSituationRecordsByType(Type t) {
+        ArrayList<SituationRecord> situationrecords = new ArrayList<>();
+        for (SituationRecord sr : storedSituationRecords) {
+            if (t.equals(sr.getDetailedType())) {
+                situationrecords.add(sr);
+            }
+        }
+
+        return situationrecords;
+    }
+}
 }
