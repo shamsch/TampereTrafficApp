@@ -6,6 +6,7 @@ import fi.tuni.TampereTrafficApp.models.TrafficIncident.Type;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public class TrafficIncidentService {
         for (SituationRecord sr : storedSituationRecords) {
             if (!types.contains(sr.getDetailedType())) {
                 types.add(sr.getDetailedType());
-                types.add(sr.getDetailedType())
+                types.add(sr.getDetailedType());
             }
         }
 
@@ -70,4 +71,4 @@ public class TrafficIncidentService {
         return situationrecords;
     }
 }
-}
+
