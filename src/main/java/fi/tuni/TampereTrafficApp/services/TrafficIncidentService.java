@@ -47,23 +47,40 @@ public class TrafficIncidentService {
                 .filter(record -> record.getId().equals(recordId))
                 .findFirst();
     }
-    
+
     public List<Type> getSituationRecordTypes() {
         ArrayList<Type> types = new ArrayList<>();
         for (SituationRecord sr : storedSituationRecords) {
-            if (!types.contains(sr.getDetailedType())) {
-                types.add(sr.getDetailedType());
-                types.add(sr.getDetailedType());
+            Type detailedType = sr.getDetailedType();
+            // Skip if null
+            if (detailedType == null) continue;
+
+            // Check if this type value already exists
+            boolean typeExists = types.stream()
+                    .anyMatch(existingType ->
+                            existingType.getValue() != null &&
+                                    existingType.getValue().equals(detailedType.getValue())
+                    );
+
+            if (!typeExists) {
+                types.add(detailedType);
             }
         }
-
         return types;
     }
 
     public List<SituationRecord> getSituationRecordsByType(Type t) {
+        if (t == null || t.getValue() == null) {
+            return new ArrayList<>();
+        }
+
         ArrayList<SituationRecord> situationrecords = new ArrayList<>();
+        String targetTypeValue = t.getValue();
+
         for (SituationRecord sr : storedSituationRecords) {
-            if (t.equals(sr.getDetailedType())) {
+            if (sr.getDetailedType() != null
+                    && sr.getDetailedType().getValue() != null
+                    && sr.getDetailedType().getValue().equals(targetTypeValue)) {
                 situationrecords.add(sr);
             }
         }

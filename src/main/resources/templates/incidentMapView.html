@@ -34,6 +34,38 @@
             background-color: #4CAF50;
             color: white;
         }
+
+        .filter-container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 200px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -42,11 +74,28 @@
     <a href="/camera/map">Traffic Cameras</a>
     <a href="/incident/map" class="active">Traffic Incidents</a>
 </nav>
+
+<div class="filter-container">
+    <form class="filter-form" th:action="@{/incident/map}" method="get">
+        <label for="incidentType">Filter by incident type:</label>
+        <select id="incidentType" name="type">
+            <option value="">All Types</option>
+            <option th:each="type : ${types}"
+                    th:value="${type.value}"
+                    th:text="${type.value}"
+                    th:selected="${param.type != null and param.type[0] == type.value}">
+            </option>
+        </select>
+        <button type="submit">Apply Filter</button>
+    </form>
+</div>
+
 <div id="map"></div>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
     var situationRecords = /*[[${situationRecords}]]*/ [];
+    var selectedType = /*[[${param.type}]]*/ null;
 
     var map = L.map('map').setView([61.4462, 23.854382], 13);
 
@@ -71,50 +120,65 @@
             '<a href="/incident/details/' + incident.id + '">View Details</a>';
     }
 
-    situationRecords.forEach(function (incident) {
-        if (incident.location.line != null && incident.location.line.posList != null) {
-            var coordinates = incident.location.line.posList.split(' ').map(Number);
-            var latLngs = [];
-            for (var i = 0; i < coordinates.length; i += 2) {
-                latLngs.push([coordinates[i + 1], coordinates[i]]);
-            }
+    function clearMap() {
+        markers.forEach(marker => marker.remove());
+        lines.forEach(line => line.remove());
+        circles.forEach(circle => circle.remove());
+        markers = [];
+        lines = [];
+        circles = [];
+    }
 
-            if (latLngs.length === 2) {
-                // For two-point lines, create a circle at the midpoint
-                var midPoint = [(latLngs[0][0] + latLngs[1][0]) / 2, (latLngs[0][1] + latLngs[1][1]) / 2];
-                var distance = map.distance(latLngs[0], latLngs[1]);
-                var circle = L.circle(midPoint, {
-                    color: 'red',
-                    fillColor: 'pink',
-                    fillOpacity: 0.3,
-                    weight: 2,
-                    opacity: 0.5,
-                    radius: distance / 2 // Set the radius to half the distance between points
-                }).bindPopup(createPopupContent(incident));
-                circles.push(circle);
-                circle.addTo(map);
-            } else {
-                // For lines with more than two points, render as a light solid line
-                var polyline = L.polyline(latLngs, {
-                    color: 'black',
-                    weight: 5,
-                    opacity: 1,
-                }).bindPopup(createPopupContent(incident));
-                lines.push(polyline);
-                polyline.addTo(map);
+    function displayIncidents(incidents) {
+        clearMap();
+
+        incidents.forEach(function (incident) {
+            if (incident.location.line != null && incident.location.line.posList != null) {
+                var coordinates = incident.location.line.posList.split(' ').map(Number);
+                var latLngs = [];
+                for (var i = 0; i < coordinates.length; i += 2) {
+                    latLngs.push([coordinates[i + 1], coordinates[i]]);
+                }
+
+                if (latLngs.length === 2) {
+                    var midPoint = [(latLngs[0][0] + latLngs[1][0]) / 2, (latLngs[0][1] + latLngs[1][1]) / 2];
+                    var distance = map.distance(latLngs[0], latLngs[1]);
+                    var circle = L.circle(midPoint, {
+                        color: 'red',
+                        fillColor: 'pink',
+                        fillOpacity: 0.3,
+                        weight: 2,
+                        opacity: 0.5,
+                        radius: distance / 2
+                    }).bindPopup(createPopupContent(incident));
+                    circles.push(circle);
+                    circle.addTo(map);
+                } else {
+                    var polyline = L.polyline(latLngs, {
+                        color: 'black',
+                        weight: 5,
+                        opacity: 1,
+                    }).bindPopup(createPopupContent(incident));
+                    lines.push(polyline);
+                    polyline.addTo(map);
+                }
+            } else if (incident.location.coordinatesForDisplay != null &&
+                incident.location.coordinatesForDisplay.latitude != null &&
+                incident.location.coordinatesForDisplay.longitude != null) {
+                var marker = L.marker([incident.location.coordinatesForDisplay.latitude, incident.location.coordinatesForDisplay.longitude])
+                    .bindPopup(createPopupContent(incident));
+                markers.push(marker);
+                marker.addTo(map);
             }
-        } else if (incident.location.coordinatesForDisplay != null &&
-            incident.location.coordinatesForDisplay.latitude != null &&
-            incident.location.coordinatesForDisplay.longitude != null) {
-            var marker = L.marker([incident.location.coordinatesForDisplay.latitude, incident.location.coordinatesForDisplay.longitude])
-                .bindPopup(createPopupContent(incident));
-            markers.push(marker);
-            marker.addTo(map);
+        });
+
+        var group = L.featureGroup(markers.concat(lines).concat(circles));
+        if (group.getLayers().length > 0) {
+            map.fitBounds(group.getBounds(), {padding: [50, 50]});
         }
-    });
+    }
 
-    var group = L.featureGroup(markers.concat(lines).concat(circles));
-    map.fitBounds(group.getBounds(), {padding: [50, 50]});
+    displayIncidents(situationRecords);
     /*]]>*/
 </script>
 </body>

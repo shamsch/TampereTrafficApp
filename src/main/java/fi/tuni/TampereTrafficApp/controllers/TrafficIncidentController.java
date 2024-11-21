@@ -1,13 +1,16 @@
 package fi.tuni.TampereTrafficApp.controllers;
 
 import fi.tuni.TampereTrafficApp.models.TrafficIncident.SituationRecord;
+import fi.tuni.TampereTrafficApp.models.TrafficIncident.Type;
 import fi.tuni.TampereTrafficApp.services.TrafficIncidentService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.awt.*;
 import java.util.List;
 
 @Controller
@@ -20,11 +23,22 @@ public class TrafficIncidentController {
     }
 
     @GetMapping("/map")
-    public String showTrafficIncidents(Model model) {
-        List<SituationRecord> situationRecords = trafficIncidentService.getSituationRecords();
+    public String showTrafficIncidents(@RequestParam(required = false) String type, Model model) {
+
+        List<Type> types = trafficIncidentService.getSituationRecordTypes();
+
+        model.addAttribute("types", types);
+
+        List<SituationRecord> situationRecords;
+        if (type != null && !type.isEmpty()) {
+            Type selectedType = types.stream().filter(t -> t.getValue().equals(type)).findFirst().orElse(null);
+            situationRecords = trafficIncidentService.getSituationRecordsByType(selectedType);
+        } else {
+            situationRecords = trafficIncidentService.getSituationRecords();
+        }
+
         model.addAttribute("situationRecords", situationRecords);
         return "incidentMapView";
-
     }
 
     @GetMapping("/details/{recordId}")
