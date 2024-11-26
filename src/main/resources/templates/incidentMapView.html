@@ -71,8 +71,9 @@
 <body>
 <h1>Tampere Traffic App</h1>
 <nav class="navbar">
-    <a href="/camera/map">Traffic Cameras</a>
-    <a href="/incident/map" class="active">Traffic Incidents</a>
+    <a href="/weathercam/map" th:class="${currentPage == 'weathercam' ? 'active' : ''}">Weather Cameras</a>
+    <a href="/camera/map" th:class="${currentPage == 'camera' ? 'active' : ''}">Traffic Cameras</a>
+    <a href="/incident/map" th:class="${currentPage == 'incident' ? 'active' : ''}">Traffic Incidents</a>
 </nav>
 
 <div class="filter-container">

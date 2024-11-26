@@ -38,10 +38,11 @@
 </head>
 <body>
 <h1>Tampere Traffic App</h1>
-<div class="navbar">
-    <a href="/camera/map" class="active">Traffic Cameras</a>
-    <a href="/incident/map">Traffic Incidents</a>
-</div>
+<nav class="navbar">
+    <a href="/weathercam/map" th:class="${currentPage == 'weathercam' ? 'active' : ''}">Weather Cameras</a>
+    <a href="/camera/map" th:class="${currentPage == 'camera' ? 'active' : ''}">Traffic Cameras</a>
+    <a href="/incident/map" th:class="${currentPage == 'incident' ? 'active' : ''}">Traffic Incidents</a>
+</nav>
 <div id="map"></div>
 <div>
     <h3>Meta Information</h3>
