@@ -1,45 +1,296 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Camera Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Details - Tampere Traffic App</title>
     <style>
-        .camera-details {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .camera-details img {
-            width: 100%;
-            height: auto;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f6fa;
         }
 
-        .camera-details h2 {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation styles */
+        .nav-container {
+            background-color: #2c3e50;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+
+        .nav-link.active {
+            background-color: #3498db;
+        }
+
+        /* Page header */
+        .page-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
             text-align: center;
         }
 
-        .camera-details p {
-            margin: 5px 0;
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Camera details styles */
+        .details-container {
+            padding: 2rem 0;
+        }
+
+        .camera-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .camera-title {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .camera-image-container {
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .info-section {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .info-value {
+            color: #4a5568;
+        }
+
+        .location-card {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .camera-card {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                padding: 1.5rem 0;
+            }
+
+            .page-header h1 {
+                font-size: 1.75rem;
+            }
         }
     </style>
 </head>
 <body>
-<div class="camera-details">
-    <h2 th:text="${camera.cameraName}">Camera Name</h2>
-    <img th:src="${camera.cameraPresets[0].imageUrl}" alt="Camera Image">
-    <p><strong>Camera ID:</strong> <span th:text="${camera.cameraId}">Camera ID</span></p>
-    <p><strong>Latitude:</strong> <span th:text="${camera.location.geometry.coordinates.lat}">Latitude</span></p>
-    <p><strong>Longitude:</strong> <span th:text="${camera.location.geometry.coordinates.lon}">Longitude</span></p>
-    <p><strong>Preset ID:</strong> <span th:text="${camera.cameraPresets[0].presetId}">Preset ID</span></p>
-    <p><strong>Presentation Name:</strong> <span
-            th:text="${camera.cameraPresets[0].presentationName}">Presentation Name</span></p>
-    <p><strong>Direction Description:</strong> <span th:text="${camera.cameraPresets[0].directionDescription}">Direction Description</span>
-    </p>
-    <p><strong>Latest Picture Timestamp:</strong> <span th:text="${camera.cameraPresets[0].latestPictureTimestamp}">Timestamp</span>
-    </p>
-</div>
+<!-- Navigation -->
+<nav class="nav-container">
+    <div class="nav-content">
+        <div class="nav-links">
+            <a th:href="@{/}" th:class="${currentPage == 'home' ? 'nav-link active' : 'nav-link'}">Home</a>
+            <a th:href="@{/weathercam/map}" th:class="${currentPage == 'weathercam' ? 'nav-link active' : 'nav-link'}">Weather
+                Cameras</a>
+            <a th:href="@{/camera/map}" th:class="${currentPage == 'camera' ? 'nav-link active' : 'nav-link'}">Traffic
+                Cameras</a>
+            <a th:href="@{/incident/map}" th:class="${currentPage == 'incident' ? 'nav-link active' : 'nav-link'}">Traffic
+                Incidents</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <h1>Traffic Camera Details</h1>
+    </div>
+</header>
+
+<!-- Camera Details Section -->
+<section class="details-container">
+    <div class="camera-card">
+        <h2 class="camera-title" th:text="${camera.cameraName}">Camera Name</h2>
+
+        <!-- Camera Image -->
+        <div class="camera-image-container">
+            <img th:src="${camera.cameraPresets[0].imageUrl}" alt="Camera Image">
+        </div>
+
+        <!-- Camera Information -->
+        <div class="info-section">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Camera ID</span>
+                    <span class="info-value" th:text="${camera.cameraId}">Camera ID</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Preset ID</span>
+                    <span class="info-value" th:text="${camera.cameraPresets[0].presetId}">Preset ID</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Information -->
+        <div class="location-card">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Latitude</span>
+                    <span class="info-value" th:text="${camera.location.geometry.coordinates.lat}">Latitude</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Longitude</span>
+                    <span class="info-value" th:text="${camera.location.geometry.coordinates.lon}">Longitude</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Details -->
+        <div class="info-section">
+            <div class="info-item">
+                <span class="info-label">Presentation Name</span>
+                <span class="info-value" th:text="${camera.cameraPresets[0].presentationName}">Presentation Name</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Direction Description</span>
+                <span class="info-value"
+                      th:text="${camera.cameraPresets[0].directionDescription}">Direction Description</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Latest Picture Timestamp</span>
+                <span class="info-value" th:text="${camera.cameraPresets[0].latestPictureTimestamp}">Timestamp</span>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div style="text-align: center;">
+            <a href="/camera/map" class="back-button">Back to Traffic Cameras</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>Tampere University, Software Design Course 2024 Autumn.</p>
+    </div>
+</footer>
 </body>
 </html>

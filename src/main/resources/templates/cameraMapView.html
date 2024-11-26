@@ -1,54 +1,231 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Traffic Cameras</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Cameras - Tampere Traffic App</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f6fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation styles */
+        .nav-container {
+            background-color: #2c3e50;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+
+        .nav-link.active {
+            background-color: #3498db;
+        }
+
+        /* Page header */
+        .page-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Map container */
+        .map-container {
+            padding: 0 1rem 2rem 1rem;
+        }
+
         #map {
             height: 600px;
             width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .navbar {
-            background-color: #333;
-            overflow: hidden;
+        /* Meta information styles */
+        .meta-info {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin: 2rem 1rem;
         }
 
-        .navbar a {
-            float: left;
+        .meta-info h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .meta-info p {
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-info span {
+            color: #3498db;
+            font-weight: 500;
+        }
+
+        /* Leaflet popup customization */
+        .leaflet-popup-content {
+            margin: 1rem;
+        }
+
+        .leaflet-popup-content b {
+            color: #2c3e50;
             display: block;
-            color: #f2f2f2;
-            text-align: center;
-            padding: 14px 16px;
-            text-decoration: none;
-            font-size: 17px;
+            margin-bottom: 0.5rem;
+            font-size: 1.1em;
         }
 
-        .navbar a:hover {
-            background-color: #ddd;
-            color: black;
+        .leaflet-popup-content img {
+            border-radius: 4px;
+            margin: 0.5rem 0;
         }
 
-        .navbar a.active {
-            background-color: #4CAF50;
+        .leaflet-popup-content a {
+            display: inline-block;
+            background-color: #3498db;
             color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 0.5rem;
+            transition: background-color 0.3s;
+        }
+
+        .leaflet-popup-content a:hover {
+            background-color: #2980b9;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .page-header {
+                padding: 1.5rem 0;
+            }
+
+            .page-header h1 {
+                font-size: 1.75rem;
+            }
+
+            #map {
+                height: 400px;
+            }
+
+            .meta-info {
+                margin: 1rem;
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-<h1>Tampere Traffic App</h1>
-<nav class="navbar">
-    <a href="/weathercam/map" th:class="${currentPage == 'weathercam' ? 'active' : ''}">Weather Cameras</a>
-    <a href="/camera/map" th:class="${currentPage == 'camera' ? 'active' : ''}">Traffic Cameras</a>
-    <a href="/incident/map" th:class="${currentPage == 'incident' ? 'active' : ''}">Traffic Incidents</a>
+<!-- Navigation -->
+<nav class="nav-container">
+    <div class="nav-content">
+        <div class="nav-links">
+            <a th:href="@{/}" th:class="${currentPage == 'home' ? 'nav-link active' : 'nav-link'}">Home</a>
+            <a th:href="@{/weathercam/map}" th:class="${currentPage == 'weathercam' ? 'nav-link active' : 'nav-link'}">Weather
+                Cameras</a>
+            <a th:href="@{/camera/map}" th:class="${currentPage == 'camera' ? 'nav-link active' : 'nav-link'}">Traffic
+                Cameras</a>
+            <a th:href="@{/incident/map}" th:class="${currentPage == 'incident' ? 'nav-link active' : 'nav-link'}">Traffic
+                Incidents</a>
+        </div>
+    </div>
 </nav>
-<div id="map"></div>
-<div>
-    <h3>Meta Information</h3>
-    <p>Request Filters: <span th:text="${meta.requestFilters}"></span></p>
-    <p>Response Timestamp: <span th:text="${meta.responseTs}"></span></p>
+
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <h1>Traffic Cameras</h1>
+    </div>
+</header>
+
+<!-- Map Section -->
+<section class="map-container">
+    <div id="map"></div>
+</section>
+
+<!-- Meta Information -->
+<div class="container">
+    <div class="meta-info">
+        <h3>Meta Information</h3>
+        <p>Request Filters: <span th:text="${meta.requestFilters}"></span></p>
+        <p>Response Timestamp: <span th:text="${meta.responseTs}"></span></p>
+    </div>
 </div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>Tampere University, Software Design Course 2024 Autumn.</p>
+    </div>
+</footer>
+
+<!-- Scripts -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -65,7 +242,10 @@
     var markers = [];
     trafficCameras.forEach(function (camera) {
         var marker = L.marker([camera.location.geometry.coordinates.lat, camera.location.geometry.coordinates.lon])
-            .bindPopup('<b>' + camera.cameraName + '</b><br><img src="' + camera.cameraPresets[0].imageUrl + '" alt="' + camera.cameraName + '" style="width:200px;height:auto;"><br>' + camera.location.geometry.coordinates.lat + ', ' + camera.location.geometry.coordinates.lon + '<br><a href="/camera/details/' + camera.cameraId + '">View Details</a>');
+            .bindPopup('<b>' + camera.cameraName + '</b><br>' +
+                '<img src="' + camera.cameraPresets[0].imageUrl + '" alt="' + camera.cameraName + '" style="width:200px;height:auto;"><br>' +
+                camera.location.geometry.coordinates.lat + ', ' + camera.location.geometry.coordinates.lon + '<br>' +
+                '<a href="/camera/details/' + camera.cameraId + '">View Details</a>');
         markers.push(marker);
         marker.addTo(map);
     });

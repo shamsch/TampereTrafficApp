@@ -3,99 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traffic Incident Details</title>
+    <title>Traffic Incident Details - Tampere Traffic App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+        /* Reset and base styles */
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f6fa;
         }
 
         .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        h1 {
-            color: #333;
+        /* Navigation styles */
+        .nav-container {
+            background-color: #2c3e50;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .incident-info {
-            margin-bottom: 20px;
+        .nav-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .incident-info p {
-            margin: 10px 0;
+        .nav-links {
+            display: flex;
+            gap: 2rem;
         }
 
-        .severity {
-            font-weight: bold;
-            color: #d9534f;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #337ab7;
+        .nav-link {
+            color: #fff;
             text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
         }
 
-        .back-link:hover {
-            text-decoration: underline;
+        .nav-link:hover {
+            background-color: #34495e;
         }
 
-        .location-info {
-            background-color: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 20px;
+        .nav-link.active {
+            background-color: #3498db;
+        }
+
+        /* Page header */
+        .page-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Incident details styles */
+        .details-container {
+            padding: 2rem 0;
+        }
+
+        .incident-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .incident-section {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .incident-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            margin-bottom: 1rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .info-value {
+            color: #4a5568;
+        }
+
+        .severity-tag {
+            display: inline-block;
+            background-color: #e74c3c;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .location-card {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+        }
+
+        .limits-list {
+            list-style: none;
+            margin-top: 0.5rem;
+        }
+
+        .limits-list li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .limits-list li:before {
+            content: "•";
+            color: #3498db;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .back-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .incident-card {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                padding: 1.5rem 0;
+            }
+
+            .page-header h1 {
+                font-size: 1.75rem;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Traffic Incident Details</h1>
-    <div class="incident-info" th:if="${situationRecord != null}">
-        <p><strong>Type:</strong> <span th:text="${situationRecord.type.value}">Incident Type</span></p>
-        <p><strong>Detailed Type:</strong> <span
-                th:text="${situationRecord.detailedType != null ? situationRecord.detailedType.value : 'N/A'}">Detailed Type</span>
-        </p>
-        <p><strong>Severity:</strong> <span class="severity" th:text="${situationRecord.severity}">Severity</span></p>
-        <p><strong>Start Time:</strong> <span th:text="${situationRecord.startTime}">Start Time</span></p>
-        <p><strong>End Time:</strong> <span
-                th:text="${situationRecord.endTime != null ? situationRecord.endTime : 'Not specified'}">End Time</span>
-        </p>
-        <p><strong>Description:</strong> <span
-                th:text="${situationRecord.generalPublicComment != null ? situationRecord.generalPublicComment : 'No description available'}">Description</span>
-        </p>
-        <p><strong>Source:</strong> <span th:text="${situationRecord.sourceName}">Source</span></p>
-        <div th:if="${situationRecord.temporaryLimitText != null and !situationRecord.temporaryLimitText.isEmpty()}">
-            <strong>Temporary Limits:</strong>
-            <ul>
+<!-- Navigation -->
+<nav class="nav-container">
+    <div class="nav-content">
+        <div class="nav-links">
+            <a th:href="@{/}" th:class="${currentPage == 'home' ? 'nav-link active' : 'nav-link'}">Home</a>
+            <a th:href="@{/weathercam/map}" th:class="${currentPage == 'weathercam' ? 'nav-link active' : 'nav-link'}">Weather
+                Cameras</a>
+            <a th:href="@{/camera/map}" th:class="${currentPage == 'camera' ? 'nav-link active' : 'nav-link'}">Traffic
+                Cameras</a>
+            <a th:href="@{/incident/map}" th:class="${currentPage == 'incident' ? 'nav-link active' : 'nav-link'}">Traffic
+                Incidents</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <h1>Traffic Incident Details</h1>
+    </div>
+</header>
+
+<!-- Incident Details Section -->
+<section class="details-container">
+    <div class="incident-card" th:if="${situationRecord != null}">
+        <!-- Basic Information -->
+        <div class="incident-section">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Type</span>
+                    <span class="info-value" th:text="${situationRecord.type.value}">Incident Type</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Detailed Type</span>
+                    <span class="info-value"
+                          th:text="${situationRecord.detailedType != null ? situationRecord.detailedType.value : 'N/A'}">Detailed Type</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Severity</span>
+                    <span class="severity-tag" th:text="${situationRecord.severity}">Severity</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Time Information -->
+        <div class="incident-section">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Start Time</span>
+                    <span class="info-value" th:text="${situationRecord.startTime}">Start Time</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">End Time</span>
+                    <span class="info-value"
+                          th:text="${situationRecord.endTime != null ? situationRecord.endTime : 'Not specified'}">End Time</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Source</span>
+                    <span class="info-value" th:text="${situationRecord.sourceName}">Source</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div class="incident-section">
+            <span class="info-label">Description</span>
+            <p class="info-value"
+               th:text="${situationRecord.generalPublicComment != null ? situationRecord.generalPublicComment : 'No description available'}">
+                Description</p>
+        </div>
+
+        <!-- Temporary Limits -->
+        <div class="incident-section"
+             th:if="${situationRecord.temporaryLimitText != null and !situationRecord.temporaryLimitText.isEmpty()}">
+            <span class="info-label">Temporary Limits</span>
+            <ul class="limits-list">
                 <li th:each="limit : ${situationRecord.temporaryLimitText}" th:text="${limit}"></li>
             </ul>
         </div>
 
-        <div class="location-info">
-            <strong>Location:</strong>
-            <p th:if="${situationRecord.location.coordinatesForDisplay != null}"
+        <!-- Location Information -->
+        <div class="location-card">
+            <span class="info-label">Location Details</span>
+            <p class="info-value" th:if="${situationRecord.location.coordinatesForDisplay != null}"
                th:text="'Coordinates: ' + ${situationRecord.location.coordinatesForDisplay.latitude} + ', ' + ${situationRecord.location.coordinatesForDisplay.longitude}">
                 Coordinates
             </p>
-            <p th:if="${situationRecord.location.locationDescriptor != null}"
+            <p class="info-value" th:if="${situationRecord.location.locationDescriptor != null}"
                th:text="'Description: ' + ${situationRecord.location.locationDescriptor}">
                 Location Description
             </p>
         </div>
-    </div>
 
-    <a href="/incident/map" class="back-link">Back to Traffic Incidents List</a>
-</div>
+        <!-- Back Button -->
+        <div style="text-align: center;">
+            <a href="/incident/map" class="back-button">Back to Traffic Incidents</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>Tampere University, Software Design Course 2024 Autumn.</p>
+    </div>
+</footer>
 </body>
 </html>

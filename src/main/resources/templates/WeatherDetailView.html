@@ -2,40 +2,258 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Weather Camera Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Camera Details - Tampere Traffic App</title>
     <style>
-        .camera-details {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .camera-details img {
-            width: 100%;
-            height: auto;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f6fa;
         }
 
-        .camera-details h2 {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation styles */
+        .nav-container {
+            background-color: #2c3e50;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+
+        .nav-link.active {
+            background-color: #3498db;
+        }
+
+        /* Page header */
+        .page-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
             text-align: center;
         }
 
-        .camera-details p {
-            margin: 5px 0;
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Camera details styles */
+        .camera-details-container {
+            padding: 2rem 0;
+        }
+
+        .camera-details {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .camera-details h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .camera-image-container {
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .camera-preset-info {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .camera-details-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .info-value {
+            color: #666;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .camera-details {
+                margin: 1rem;
+                padding: 1rem;
+            }
+
+            .camera-details-info {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-<div class="camera-details">
-    <h2 th:text="${camera.properties.name}">Camera Name</h2>
-    <div th:each="preset : ${camera.properties.presets}">
-        <img th:src="${preset.imageUrl}" alt="Camera Image">
-        <p><strong>Presentation Name:</strong> <span th:text="${preset.presentationName}">Presentation Name</span></p>
+<!-- Navigation -->
+<nav class="nav-container">
+    <div class="nav-content">
+        <div class="nav-links">
+            <a th:href="@{/}" th:class="${currentPage == 'home' ? 'nav-link active' : 'nav-link'}">Home</a>
+            <a th:href="@{/weathercam/map}" th:class="${currentPage == 'weathercam' ? 'nav-link active' : 'nav-link'}">Weather
+                Cameras</a>
+            <a th:href="@{/camera/map}" th:class="${currentPage == 'camera' ? 'nav-link active' : 'nav-link'}">Traffic
+                Cameras</a>
+            <a th:href="@{/incident/map}" th:class="${currentPage == 'incident' ? 'nav-link active' : 'nav-link'}">Traffic
+                Incidents</a>
+        </div>
     </div>
-    <p><strong>Camera ID:</strong> <span th:text="${camera.properties.id}">Camera ID</span></p>
-    <p><strong>Latitude:</strong> <span th:text="${camera.geometry.coordinates[1]}">Latitude</span></p>
-    <p><strong>Longitude:</strong> <span th:text="${camera.geometry.coordinates[0]}">Longitude</span></p>
-</div>
+</nav>
+
+<!-- Page Header -->
+<header class="page-header">
+    <div class="container">
+        <h1>Weather Camera Details</h1>
+    </div>
+</header>
+
+<!-- Camera Details Section -->
+<section class="camera-details-container">
+    <div class="camera-details">
+        <h2 th:text="${camera.properties.name}">Camera Name</h2>
+
+        <!-- Camera Images and Preset Info -->
+        <div th:each="preset : ${camera.properties.presets}" class="camera-preset">
+            <div class="camera-image-container">
+                <img th:src="${preset.imageUrl}" alt="Camera Image">
+            </div>
+            <div class="camera-preset-info">
+                <div class="info-item">
+                    <span class="info-label">View Direction:</span>
+                    <span class="info-value" th:text="${preset.presentationName}">Presentation Name</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Camera Details Info -->
+        <div class="camera-details-info">
+            <div class="info-item">
+                <span class="info-label">Camera ID</span>
+                <span class="info-value" th:text="${camera.properties.id}">Camera ID</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Latitude</span>
+                <span class="info-value" th:text="${camera.geometry.coordinates[1]}">Latitude</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Longitude</span>
+                <span class="info-value" th:text="${camera.geometry.coordinates[0]}">Longitude</span>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <div style="text-align: center;">
+            <a href="/weathercam/map" class="back-button">Back to Map</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>Tampere University, Software Design Course 2024 Autumn.</p>
+    </div>
+</footer>
 </body>
 </html>
