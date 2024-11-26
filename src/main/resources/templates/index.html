@@ -187,8 +187,8 @@
 <section class="hero">
     <div class="container">
         <h1>Welcome to Tampere Traffic App</h1>
-        <p class="hero-text">Stay informed about traffic conditions, weather, and road incidents in real-time across
-            Tampere region</p>
+        <p class="hero-text">Stay informed about traffic conditions, weather, and road incidents in Tampere with the
+            help this application backed by three APIs</p>
     </div>
 </section>
 
@@ -200,8 +200,10 @@
             <img th:src="@{/images/weather-camera.jpg}" alt="Weather Camera System" class="feature-image">
             <div class="feature-content">
                 <h3>Weather Cameras</h3>
-                <p>Access real-time weather camera feeds from various locations across Tampere to check current
-                    conditions.</p>
+                <p>Weather Camera is getting its underlying camera image from Fintraffic's API.
+                    The speciality is some of the camera is held perpendicular to the road, which gives a 90 degree view
+                    of the road (FI: Tienpinta) - allowing
+                    the motorist to judge the condition before they go on the road when it rains or snows.</p>
                 <a th:href="@{/weathercam/map}" class="btn">View Weather Cameras</a>
             </div>
         </div>
@@ -211,7 +213,10 @@
             <img th:src="@{/images/traffic-camera.jpg}" alt="Traffic Camera System" class="feature-image">
             <div class="feature-content">
                 <h3>Traffic Cameras</h3>
-                <p>Monitor traffic flow and road conditions with our network of traffic cameras throughout the city.</p>
+                <p>Traffic Camera is getting its underlying camera images from Info Tripla's API which is a public API
+                    from the city of Tampere.
+                    The images are of the road taken from traffic camera. However, we have stopped working with this API
+                    as it has proven unreliable and undergoing maintenance. </p>
                 <a th:href="@{/camera/map}" class="btn">View Traffic Cameras</a>
             </div>
         </div>
@@ -221,8 +226,9 @@
             <img th:src="@{/images/traffic-incident.jpg}" alt="Traffic Incidents" class="feature-image">
             <div class="feature-content">
                 <h3>Traffic Incidents</h3>
-                <p>Stay updated with real-time traffic incidents, road works, and other events affecting your
-                    journey.</p>
+                <p>Traffic Incident is a public API from the city of Tampere. It gives a list of all traffic disruption
+                    across Tampere i.e road work,
+                    construction, road closures, events etc. </p>
                 <a th:href="@{/incident/map}" class="btn">View Incidents</a>
             </div>
         </div>
