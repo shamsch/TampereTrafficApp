@@ -16,7 +16,8 @@ public class AppConfig {
         
     @Value("${digitraffic.api.url:https://tie.digitraffic.fi}")
     private String digitrafficApiUrl;
-    
+
+
     private static final String[] CAMERA_IDS = {
         "C04504", "C04506", "C04507", "C04508", "C04509",
         "C04519", "C04524", "C04528", "C04530", "C04572", 
@@ -36,7 +37,8 @@ public class AppConfig {
     }
     
     /**
-     * Getter method for the array of weather camera IDs.
+     * Getter method for the array of weather camera IDs that are within the Tampere region. The IDs are defined in the CAMERA_IDS array.
+     * It was found by reading the Digitraffic API documentation.
      * 
      * @return An array of weather camera IDs.
      */

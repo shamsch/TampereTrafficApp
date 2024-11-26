@@ -1,46 +1,91 @@
 package fi.tuni.TampereTrafficApp.services;
 
+import fi.tuni.TampereTrafficApp.config.AppConfig;
 import fi.tuni.TampereTrafficApp.models.WeatherCamera.WeatherCameraFeature;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Arrays;
+import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
+import java.util.Optional;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+import reactor.core.publisher.Mono;
 
 /**
  * Service class for handling weather camera data retrieval.
  */
 @Service
 public class WeatherCameraService {
+    private final WebClient webClient;
+    private final AppConfig appConfig;
+    private List<WeatherCameraFeature> storedWeatherCameras;
 
-    private final RestTemplate restTemplate;
-    
-    @Autowired
-    public WeatherCameraService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public WeatherCameraService(WebClient.Builder webClientBuilder, AppConfig appConfig) {
+        this.appConfig = appConfig;
+        this.webClient = webClientBuilder.baseUrl(appConfig.getDigitrafficApiUrl()).build();
+        this.storedWeatherCameras = new ArrayList<>();
+        fetchAndStoreWeatherCameras();
     }
 
     /**
-     * Retrieves a list of weather cameras by their respective URLs.
-     * 
-     * @param urls Array of URLs for the weather cameras.
-     * @return A list of WeatherCameraFeature objects.
+     * Fetches and stores weather camera data from the API.
      */
-    public List<WeatherCameraFeature> getWeatherCamerasByUrls(String[] urls) {
-        return Arrays.stream(urls)
-               .map(this::getWeatherCameraByUrl)
-               .collect(Collectors.toList());
+    private void fetchAndStoreWeatherCameras() {
+        String[] cameraIds = appConfig.getCameraIds();
+        List<Mono<WeatherCameraFeature>> requests = new ArrayList<>();
+
+        for (String id : cameraIds) {
+            Mono<WeatherCameraFeature> request = webClient.get()
+                    .uri("/api/weathercam/v1/stations/" + id)
+                    .retrieve()
+                    .bodyToMono(WeatherCameraFeature.class);
+            requests.add(request);
+        }
+
+        Mono.zip(requests, responses -> {
+            List<WeatherCameraFeature> features = new ArrayList<>();
+            for (Object response : responses) {
+                features.add((WeatherCameraFeature) response);
+            }
+            return features;
+        }).subscribe(
+                features -> this.storedWeatherCameras = features,
+                error -> System.err.println("Error fetching weather cameras: " + error.getMessage())
+        );
     }
-    
+
     /**
-     * Retrieves a single weather camera's data by its URL.
-     * 
-     * @param url The URL of the weather camera.
-     * @return A WeatherCameraFeature object representing the camera's data.
+     * Retrieves all stored weather cameras.
+     *
+     * @return List of weather camera features.
      */
-    public WeatherCameraFeature getWeatherCameraByUrl(String url) {
-        return restTemplate.getForObject(url, WeatherCameraFeature.class);
+    public List<WeatherCameraFeature> getWeatherCameras() {
+        return storedWeatherCameras;
+    }
+
+    /**
+     * Retrieves a specific weather camera by its ID.
+     *
+     * @param id The ID of the weather camera.
+     * @return Optional containing the weather camera if found.
+     */
+    public Optional<WeatherCameraFeature> getWeatherCameraById(String id) {
+        return storedWeatherCameras.stream()
+                .filter(camera -> camera.getProperties().getId().equals(id))
+                .findFirst();
+    }
+
+    /**
+     * Retrieves only the weather cameras that have Tienpinta presentation.
+     *
+     * @return List of weather camera features with Tienpinta presentation.
+     */
+    public List<WeatherCameraFeature> getTienpintaCameras() {
+        return storedWeatherCameras.stream()
+                .filter(feature -> feature.getProperties().getPresets().stream()
+                        .anyMatch(preset -> preset.getPresentationName() != null
+                                && !preset.getPresentationName().isEmpty()
+                                && preset.getPresentationName().equals("Tienpinta")))
+                .collect(Collectors.toList());
     }
 }
