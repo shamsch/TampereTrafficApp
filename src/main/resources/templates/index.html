@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tampere Traffic App</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation styles */
+        .nav-container {
+            background-color: #2c3e50;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #34495e;
+        }
+
+        .nav-link.active {
+            background-color: #3498db;
+        }
+
+        /* Hero section styles */
+        .hero {
+            background: linear-gradient(rgba(44, 62, 80, 0.9), rgba(44, 62, 80, 0.9)),
+            url('/api/placeholder/1200/400') center/cover;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-text {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Features section styles */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .feature-content {
+            padding: 1.5rem;
+        }
+
+        .feature-content h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .feature-content p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Footer styles */
+        .footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<nav class="nav-container">
+    <div class="nav-content">
+        <div class="nav-links">
+            <a th:href="@{/}" th:class="${currentPage == 'home' ? 'nav-link active' : 'nav-link'}">Home</a>
+            <a th:href="@{/weathercam/map}" th:class="${currentPage == 'weathercam' ? 'nav-link active' : 'nav-link'}">Weather
+                Cameras</a>
+            <a th:href="@{/camera/map}" th:class="${currentPage == 'camera' ? 'nav-link active' : 'nav-link'}">Traffic
+                Cameras</a>
+            <a th:href="@{/incident/map}" th:class="${currentPage == 'incident' ? 'nav-link active' : 'nav-link'}">Traffic
+                Incidents</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container">
+        <h1>Welcome to Tampere Traffic App</h1>
+        <p class="hero-text">Stay informed about traffic conditions, weather, and road incidents in real-time across
+            Tampere region</p>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container">
+    <div class="features">
+        <!-- Weather Camera Card -->
+        <div class="feature-card">
+            <img th:src="@{/images/weather-camera.jpg}" alt="Weather Camera System" class="feature-image">
+            <div class="feature-content">
+                <h3>Weather Cameras</h3>
+                <p>Access real-time weather camera feeds from various locations across Tampere to check current
+                    conditions.</p>
+                <a th:href="@{/weathercam/map}" class="btn">View Weather Cameras</a>
+            </div>
+        </div>
+
+        <!-- Traffic Camera Card -->
+        <div class="feature-card">
+            <img th:src="@{/images/traffic-camera.jpg}" alt="Traffic Camera System" class="feature-image">
+            <div class="feature-content">
+                <h3>Traffic Cameras</h3>
+                <p>Monitor traffic flow and road conditions with our network of traffic cameras throughout the city.</p>
+                <a th:href="@{/camera/map}" class="btn">View Traffic Cameras</a>
+            </div>
+        </div>
+
+        <!-- Traffic Incidents Card -->
+        <div class="feature-card">
+            <img th:src="@{/images/traffic-incident.jpg}" alt="Traffic Incidents" class="feature-image">
+            <div class="feature-content">
+                <h3>Traffic Incidents</h3>
+                <p>Stay updated with real-time traffic incidents, road works, and other events affecting your
+                    journey.</p>
+                <a th:href="@{/incident/map}" class="btn">View Incidents</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>Tampere University, Software Design Course 2024 Autumn.</p>
+    </div>
+</footer>
+</body>
+</html>
