@@ -34,6 +34,7 @@ public class WeatherCameraController {
                 weatherCameraService.getTienpintaCameras() :
                 weatherCameraService.getWeatherCameras();
         model.addAttribute("weatherCameras", features);
+        model.addAttribute("showTienpinta", showTienpinta);
         return "WeatherMapView";
     }
 
