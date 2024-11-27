@@ -1,4 +1,3 @@
-// WeatherCameraController.java
 package fi.tuni.TampereTrafficApp.controllers;
 
 import fi.tuni.TampereTrafficApp.models.WeatherCamera.WeatherCameraFeature;
@@ -31,8 +30,8 @@ public class WeatherCameraController {
     @GetMapping("/weathercam/map")
     public String showCameraMap(@RequestParam(required = false, defaultValue = "false") boolean showTienpinta, Model model) {
         List<WeatherCameraFeature> features = showTienpinta ?
-                weatherCameraService.getTienpintaCameras() :
-                weatherCameraService.getWeatherCameras();
+                weatherCameraService.getTienpintaCameras().block() :
+                weatherCameraService.getWeatherCameras().block();
         model.addAttribute("weatherCameras", features);
         model.addAttribute("showTienpinta", showTienpinta);
         return "WeatherMapView";
@@ -47,7 +46,9 @@ public class WeatherCameraController {
      */
     @GetMapping("/weathercam/details/{id}")
     public String showCameraDetails(@PathVariable String id, Model model) {
-        WeatherCameraFeature feature = weatherCameraService.getWeatherCameraById(id).orElse(null);
+        WeatherCameraFeature feature = weatherCameraService.getWeatherCameraById(id)
+                .block() // Block to get the Mono<Optional<WeatherCameraFeature>>
+                .orElse(null); // Handle the Optional
         model.addAttribute("camera", feature);
         return "WeatherDetailView";
     }

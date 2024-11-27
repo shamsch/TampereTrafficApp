@@ -6,6 +6,7 @@ import fi.tuni.TampereTrafficApp.models.TrafficCamera.TrafficCamera;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,62 +22,58 @@ public class TrafficCameraService {
 
     // WebClient instance for making HTTP requests
     private final WebClient webClient;
-    // List to store the fetched traffic cameras
-    private List<TrafficCamera> storedTrafficCameras;
-    // Meta data associated with the traffic cameras
-    private Meta storedMeta;
 
     /**
-     * Constructor to initialize the WebClient and fetch traffic cameras.
-     * 
+     * Constructor to initialize the WebClient.
+     *
      * @param webClientBuilder Builder for creating a WebClient instance.
      */
     public TrafficCameraService(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
-        fetchAndStoreTrafficCameras();
     }
-    
+
     /**
-     * Method to fetch traffic cameras from the API and store them locally.
+     * Method to fetch traffic cameras from the API.
+     *
+     * @return Mono containing the traffic camera response
      */
-    private void fetchAndStoreTrafficCameras() {
-        webClient.get()
+    private Mono<TrafficCameraResponse> fetchTrafficCameras() {
+        return webClient.get()
                 .uri(CAMERAS_ENDPOINT)
                 .retrieve()
-                .bodyToMono(TrafficCameraResponse.class)
-                .subscribe(response -> {
-                    storedTrafficCameras = response.getResults();
-                    storedMeta = response.getMeta();
-                }, error -> System.err.println("Error fetching traffic cameras: " + error.getMessage()));
+                .bodyToMono(TrafficCameraResponse.class);
     }
-    
+
     /**
-     * Method to retrieve the list of stored traffic cameras.
-     * 
-     * @return The list of traffic cameras.
+     * Method to retrieve the list of traffic cameras.
+     *
+     * @return Mono containing the list of traffic cameras.
      */
-    public List<TrafficCamera> getTrafficCameras() {
-        return storedTrafficCameras;
+    public Mono<List<TrafficCamera>> getTrafficCameras() {
+        return fetchTrafficCameras()
+                .map(TrafficCameraResponse::getResults);
     }
 
     /**
      * Method to retrieve a traffic camera by its ID.
-     * 
+     *
      * @param cameraId The ID of the traffic camera.
-     * @return An Optional containing the traffic camera if found, otherwise empty.
+     * @return Mono containing an Optional with the traffic camera if found.
      */
-    public Optional<TrafficCamera> getTrafficCameraById(String cameraId) {
-        return storedTrafficCameras.stream()
-                .filter(camera -> camera.getCameraId().equals(cameraId))
-                .findFirst();
+    public Mono<Optional<TrafficCamera>> getTrafficCameraById(String cameraId) {
+        return fetchTrafficCameras()
+                .map(response -> response.getResults().stream()
+                        .filter(camera -> camera.getCameraId().equals(cameraId))
+                        .findFirst());
     }
 
     /**
      * Method to retrieve the meta data associated with the traffic cameras.
-     * 
-     * @return The meta data.
+     *
+     * @return Mono containing the meta data.
      */
-    public Meta getMeta() {
-        return storedMeta;
+    public Mono<Meta> getMeta() {
+        return fetchTrafficCameras()
+                .map(TrafficCameraResponse::getMeta);
     }
 }

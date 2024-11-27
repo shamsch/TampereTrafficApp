@@ -18,19 +18,18 @@ import reactor.core.publisher.Mono;
 public class WeatherCameraService {
     private final WebClient webClient;
     private final AppConfig appConfig;
-    private List<WeatherCameraFeature> storedWeatherCameras;
 
     public WeatherCameraService(WebClient.Builder webClientBuilder, AppConfig appConfig) {
         this.appConfig = appConfig;
         this.webClient = webClientBuilder.baseUrl(appConfig.getDigitrafficApiUrl()).build();
-        this.storedWeatherCameras = new ArrayList<>();
-        fetchAndStoreWeatherCameras();
     }
 
     /**
-     * Fetches and stores weather camera data from the API.
+     * Fetches weather camera data from the API.
+     *
+     * @return Mono containing a list of weather camera features.
      */
-    private void fetchAndStoreWeatherCameras() {
+    private Mono<List<WeatherCameraFeature>> fetchWeatherCameras() {
         String[] cameraIds = appConfig.getCameraIds();
         List<Mono<WeatherCameraFeature>> requests = new ArrayList<>();
 
@@ -42,50 +41,49 @@ public class WeatherCameraService {
             requests.add(request);
         }
 
-        Mono.zip(requests, responses -> {
+        return Mono.zip(requests, responses -> {
             List<WeatherCameraFeature> features = new ArrayList<>();
             for (Object response : responses) {
                 features.add((WeatherCameraFeature) response);
             }
             return features;
-        }).subscribe(
-                features -> this.storedWeatherCameras = features,
-                error -> System.err.println("Error fetching weather cameras: " + error.getMessage())
-        );
+        });
     }
 
     /**
-     * Retrieves all stored weather cameras.
+     * Retrieves all weather cameras.
      *
-     * @return List of weather camera features.
+     * @return Mono containing a list of weather camera features.
      */
-    public List<WeatherCameraFeature> getWeatherCameras() {
-        return storedWeatherCameras;
+    public Mono<List<WeatherCameraFeature>> getWeatherCameras() {
+        return fetchWeatherCameras();
     }
 
     /**
      * Retrieves a specific weather camera by its ID.
      *
      * @param id The ID of the weather camera.
-     * @return Optional containing the weather camera if found.
+     * @return Mono containing an Optional with the weather camera if found.
      */
-    public Optional<WeatherCameraFeature> getWeatherCameraById(String id) {
-        return storedWeatherCameras.stream()
-                .filter(camera -> camera.getProperties().getId().equals(id))
-                .findFirst();
+    public Mono<Optional<WeatherCameraFeature>> getWeatherCameraById(String id) {
+        return fetchWeatherCameras()
+                .map(cameras -> cameras.stream()
+                        .filter(camera -> camera.getProperties().getId().equals(id))
+                        .findFirst());
     }
 
     /**
      * Retrieves only the weather cameras that have Tienpinta presentation.
      *
-     * @return List of weather camera features with Tienpinta presentation.
+     * @return Mono containing a list of weather camera features with Tienpinta presentation.
      */
-    public List<WeatherCameraFeature> getTienpintaCameras() {
-        return storedWeatherCameras.stream()
-                .filter(feature -> feature.getProperties().getPresets().stream()
-                        .anyMatch(preset -> preset.getPresentationName() != null
-                                && !preset.getPresentationName().isEmpty()
-                                && preset.getPresentationName().equals("Tienpinta")))
-                .collect(Collectors.toList());
+    public Mono<List<WeatherCameraFeature>> getTienpintaCameras() {
+        return fetchWeatherCameras()
+                .map(cameras -> cameras.stream()
+                        .filter(feature -> feature.getProperties().getPresets().stream()
+                                .anyMatch(preset -> preset.getPresentationName() != null
+                                        && !preset.getPresentationName().isEmpty()
+                                        && preset.getPresentationName().equals("Tienpinta")))
+                        .collect(Collectors.toList()));
     }
 }

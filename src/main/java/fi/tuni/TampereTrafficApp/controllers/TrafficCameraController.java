@@ -20,7 +20,7 @@ public class TrafficCameraController {
 
     /**
      * Constructor to initialize the TrafficCameraService.
-     * 
+     *
      * @param trafficCameraService The service instance for traffic cameras.
      */
     public TrafficCameraController(TrafficCameraService trafficCameraService) {
@@ -29,14 +29,14 @@ public class TrafficCameraController {
 
     /**
      * Handles GET request to display the traffic camera map.
-     * 
+     *
      * @param model The model to add attributes to.
      * @return The view name for the traffic camera map.
      */
     @GetMapping("/map")
     public String showCameraMap(Model model) {
-        List<TrafficCamera> trafficCamerasList = trafficCameraService.getTrafficCameras();
-        Meta meta = trafficCameraService.getMeta();
+        List<TrafficCamera> trafficCamerasList = trafficCameraService.getTrafficCameras().block();
+        Meta meta = trafficCameraService.getMeta().block();
         model.addAttribute("trafficCameras", trafficCamerasList);
         model.addAttribute("meta", meta);
         return "cameraMapView";
@@ -44,14 +44,16 @@ public class TrafficCameraController {
 
     /**
      * Handles GET request to display details of a specific traffic camera.
-     * 
+     *
      * @param cameraId The ID of the traffic camera.
      * @param model The model to add attributes to.
      * @return The view name for the traffic camera details.
      */
     @GetMapping("/details/{cameraId}")
     public String showCameraDetails(@PathVariable String cameraId, Model model) {
-        TrafficCamera camera = trafficCameraService.getTrafficCameraById(cameraId).orElse(null);
+        TrafficCamera camera = trafficCameraService.getTrafficCameraById(cameraId)
+                .block() // Block to get the Mono<Optional<TrafficCamera>>
+                .orElse(null); // Handle the Optional
         model.addAttribute("camera", camera);
         return "cameraDetailsView";
     }
