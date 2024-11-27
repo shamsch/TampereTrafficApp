@@ -41,8 +41,6 @@ public class SituationRecord {
     
     public SituationRecord(String id, String version, String creationTime, String versionTime, String startTime, String endTime, Type type, Type detailedType, String detailedTypeText, String severity, boolean safetyRelatedMessage, String sourceName, String generalPublicComment, String situationId, Location location, List<String> temporaryLimitText) {  
         
-        System.out.println(creationTime);
-        
         this.id = id;
         this.version = version;
         
@@ -50,12 +48,6 @@ public class SituationRecord {
         this.versionTime = formatTimestamp(versionTime);
         this.startTime = formatTimestamp(startTime);
         this.endTime = formatTimestamp(endTime); 
-        /*
-        this.creationTime = (creationTime);
-        this.versionTime = (versionTime);
-        this.startTime = (startTime);
-        this.endTime = (endTime);
-        */
         this.type = type;
         this.detailedType = detailedType;
         this.detailedTypeText = detailedTypeText;
