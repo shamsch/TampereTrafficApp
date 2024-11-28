@@ -6,10 +6,6 @@ import lombok.ToString;
 
 import java.util.List;
 
-/**
- *
- * @author Joel
- */
 @Getter
 @Setter
 @ToString
