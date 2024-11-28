@@ -1,10 +1,6 @@
 package fi.tuni.TampereTrafficApp.models.TrafficIncident;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
