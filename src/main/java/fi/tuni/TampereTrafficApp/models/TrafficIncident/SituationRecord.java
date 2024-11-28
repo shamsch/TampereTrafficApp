@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- *
- * @author Joel
- */
 @Getter
 @Setter
 @ToString
@@ -39,7 +35,6 @@ public class SituationRecord {
         
         this.id = id;
         this.version = version;
-        
         this.creationTime = formatTimestamp(creationTime);
         this.versionTime = formatTimestamp(versionTime);
         this.startTime = formatTimestamp(startTime);
@@ -57,7 +52,8 @@ public class SituationRecord {
         
     }
 
-    public static String formatTimestamp(String timestamp) {
+    // Format timestamps for the constructor
+    private static String formatTimestamp(String timestamp) {
         if (timestamp != null) {
             StringBuilder sb = new StringBuilder();
 
