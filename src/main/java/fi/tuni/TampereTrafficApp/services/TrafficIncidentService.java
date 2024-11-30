@@ -11,10 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- *
- * @author Joel
- */
 @Service
 public class TrafficIncidentService {
     private static final String BASE_URL = "https://traffic-incidents.tampere.fi";
